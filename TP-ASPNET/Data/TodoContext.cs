@@ -2,17 +2,20 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using TP_ASPNET.Models;
 
 namespace TP_ASPNET.Models
 {
-    public class TodoContext : DbContext
-    {
+    public class TodoContext : IdentityDbContext<User> {
+
         public TodoContext (DbContextOptions<TodoContext> options)
             : base(options)
         {
         }
+
+
 
         public DbSet<TP_ASPNET.Models.Todo> Todo { get; set; }
 

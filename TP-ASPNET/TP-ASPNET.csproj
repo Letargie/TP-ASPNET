@@ -5,10 +5,29 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Migrations\20190326131407_Initial.cs" />
+    <Compile Remove="Migrations\20190326131407_Initial.Designer.cs" />
+    <Compile Remove="Migrations\20190326132634_Initial.cs" />
+    <Compile Remove="Migrations\20190326132634_Initial.Designer.cs" />
+    <Compile Remove="Migrations\20190326141740_Initial.cs" />
+    <Compile Remove="Migrations\20190326141740_Initial.Designer.cs" />
+    <Compile Remove="Migrations\20190326142322_Initial.cs" />
+    <Compile Remove="Migrations\20190326142322_Initial.Designer.cs" />
+    <Compile Remove="Migrations\20190326143857_Initial.cs" />
+    <Compile Remove="Migrations\20190326143857_Initial.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.1.2" PrivateAssets="All" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.1" />
     <PackageReference Include="System.Data.SQLite.EF6" Version="1.0.110" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="Views\Home\Login.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
   </ItemGroup>
 
 </Project>

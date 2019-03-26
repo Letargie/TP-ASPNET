@@ -1,12 +1,16 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.AspNetCore.Identity;
 
 namespace TP_ASPNET.Models {
-    public class User {
+    [Table("AspNetUsers")]
+    public class User : IdentityUser {
 
-        public Guid Id { get; set; }
-        public string Login { get; set; }
-        public string Password { get; set; }
+        public string FirstName { get; set; }
+
+        public string LastName { get; set; }
+
         [DataType(DataType.Date)]
         public DateTime InscriptionDate { get; set; }
         [DataType(DataType.Date)]
