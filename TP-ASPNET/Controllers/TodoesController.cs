@@ -39,12 +39,9 @@ namespace TP_ASPNET.Controllers{
             }
 
             var todo = await _context.Todo
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (todo == null){
-                return NotFound();
-            }
+                .FirstOrDefaultAsync(t => t.Id == id && t.User == GetCurrentUser().Result);
             // We check if the todo belong to the current user
-            if (todo.User != GetCurrentUser().Result) {
+            if (todo == null){
                 return Unauthorized();
             }
 
@@ -84,14 +81,10 @@ namespace TP_ASPNET.Controllers{
                 return NotFound();
             }
 
-            var todo = await _context.Todo.FindAsync(id);
-            // If the todo doesn't exist
-            if (todo == null){
-                return NotFound();
-            }
+            var todo = _context.Todo.First(t => t.Id == id && t.User == GetCurrentUser().Result);
             // If the todo doesn't belong to the current user
-            if (todo.User != GetCurrentUser().Result) {
-                return Unauthorized();
+            if (todo == null){
+                 return Unauthorized();
             }
             return View(todo);
         }
@@ -102,20 +95,17 @@ namespace TP_ASPNET.Controllers{
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Guid id, [Bind("Title,Description")] Todo todo){
-            // If the todo doesn't exists
-            if (id != todo.Id){
-                return NotFound();
-            }
-
-            // If the Todo doesn't belong to our user
-            if (todo.User != GetCurrentUser().Result) {
-                return Unauthorized();
-            }
-            
-            if (ModelState.IsValid){
-                todo.LastModificationDate = DateTime.Now;
+            if (ModelState.IsValid) {
+                // If the Todo doesn't belong to our user
+                Todo curTodo = _context.Todo.First(t => t.Id == id && t.User == GetCurrentUser().Result);
+                if (curTodo == null) {
+                    return Unauthorized();
+                }
+                curTodo.Description = todo.Description;
+                curTodo.Title = todo.Title;
+                curTodo.LastModificationDate = DateTime.Now;
                 try{
-                    _context.Update(todo);
+                    _context.Update(curTodo);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException){
@@ -141,10 +131,6 @@ namespace TP_ASPNET.Controllers{
                 .FirstOrDefaultAsync(m => m.Id == id && m.User == GetCurrentUser().Result);
             // If we haven't found any todoes
             if (todo == null){
-                return NotFound();
-            }
-            // If the Todo doesn't belong to our user, we exit with an error code
-            if (todo.User != GetCurrentUser().Result) {
                 return Unauthorized();
             }
 
@@ -155,13 +141,9 @@ namespace TP_ASPNET.Controllers{
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id){
-            var todo = await _context.Todo.FindAsync(id);
-            // If the todo doesn't exist
-            if (todo == null) {
-                return NotFound();
-            }
+            var todo = _context.Todo.First(t => t.Id == id && t.User == GetCurrentUser().Result);
             // If the Todo doesn't belong to our user, we exit with an error code
-            if (todo.User != GetCurrentUser().Result){
+            if (todo == null) {
                 return Unauthorized();
             }
             // Remove the user

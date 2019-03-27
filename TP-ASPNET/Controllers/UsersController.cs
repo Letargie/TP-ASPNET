@@ -15,10 +15,66 @@ namespace TP_ASPNET.Controllers{
 
         private readonly TodoContext _context;
         private readonly UserManager<User> _userManager;
+        private readonly SignInManager<User> _signInManager;
 
-        public UsersController(TodoContext context, UserManager<User> userManager) {
+        public UsersController(TodoContext context, UserManager<User> userManager, SignInManager<User> signInManager) {
             _context = context;
             _userManager = userManager;
+            _signInManager = signInManager;
+        }
+
+        [HttpGet]
+        public async Task<User> GetCurrentUser() {
+            User usr = await GetCurrentUserAsync();
+            return usr;
+        }
+        private Task<User> GetCurrentUserAsync() => _userManager.GetUserAsync(HttpContext.User);
+
+
+        // GET: Users/Edit
+        public async Task<IActionResult> Edit() {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null) {
+                return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+            }
+
+            return View(user);
+        }
+
+
+
+        // GET: Users/ChangePassword
+        public async Task<IActionResult> ChangePassword() {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null) {
+                return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+            }
+
+            return View(user);
+        }
+
+        // POST: Users/ChangePassword
+        [HttpPost]
+        public async Task<IActionResult> ChangePassword(String oldPassword, String password) {
+            if (!ModelState.IsValid){
+                return View(User);
+            }
+
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null) {
+                return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+            }
+
+            var changePasswordResult = await _userManager.ChangePasswordAsync(user, oldPassword, password);
+            if (!changePasswordResult.Succeeded) {
+                foreach (var error in changePasswordResult.Errors) {
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
+                return View(User);
+            }
+
+            await _signInManager.RefreshSignInAsync(user);
+            return View(User);
         }
 
 
