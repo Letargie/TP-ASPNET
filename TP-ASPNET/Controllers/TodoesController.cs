@@ -9,16 +9,13 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using TP_ASPNET.Models;
 
-namespace TP_ASPNET.Controllers
-{
+namespace TP_ASPNET.Controllers{
     [Authorize]
-    public class TodoesController : Controller
-    {
+    public class TodoesController : Controller{
         private readonly TodoContext _context;
         private readonly UserManager<User> _userManager;
 
-        public TodoesController(TodoContext context, UserManager<User> userManager)
-        {
+        public TodoesController(TodoContext context, UserManager<User> userManager){
             _context = context;
             _userManager = userManager;
         }
@@ -31,32 +28,32 @@ namespace TP_ASPNET.Controllers
         private Task<User> GetCurrentUserAsync() => _userManager.GetUserAsync(HttpContext.User);
 
         // GET: Todoes
-        public async Task<IActionResult> Index()
-        {
+        public async Task<IActionResult> Index(){
             return View(await _context.Todo.Where(t => t.User == GetCurrentUser().Result).AsQueryable().ToListAsync());
         }
 
         // GET: Todoes/Details/5
-        public async Task<IActionResult> Details(Guid? id)
-        {
-            if (id == null)
-            {
+        public async Task<IActionResult> Details(Guid? id){
+            if (id == null){
                 return NotFound();
             }
 
             var todo = await _context.Todo
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (todo == null)
-            {
+            if (todo == null){
                 return NotFound();
             }
+            // We check if the todo belong to the current user
+            if (todo.User != GetCurrentUser().Result) {
+                return Unauthorized();
+            }
+
 
             return View(todo);
         }
 
         // GET: Todoes/Create
-        public IActionResult Create()
-        {
+        public IActionResult Create(){
             return View();
         }
 
@@ -65,10 +62,8 @@ namespace TP_ASPNET.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Title,Description")] Todo todo)
-        {
-            if (ModelState.IsValid)
-            {
+        public async Task<IActionResult> Create([Bind("Title,Description")] Todo todo){
+            if (ModelState.IsValid){
                 todo.Id = Guid.NewGuid();
                 todo.User = GetCurrentUser().Result;
                 todo.CreationDate = DateTime.Now;
@@ -82,17 +77,21 @@ namespace TP_ASPNET.Controllers
         }
 
         // GET: Todoes/Edit/5
-        public async Task<IActionResult> Edit(Guid? id)
-        {
-            if (id == null)
-            {
+        public async Task<IActionResult> Edit(Guid? id){
+
+            // If the id is invalid
+            if (id == null){
                 return NotFound();
             }
 
             var todo = await _context.Todo.FindAsync(id);
-            if (todo == null)
-            {
+            // If the todo doesn't exist
+            if (todo == null){
                 return NotFound();
+            }
+            // If the todo doesn't belong to the current user
+            if (todo.User != GetCurrentUser().Result) {
+                return Unauthorized();
             }
             return View(todo);
         }
@@ -102,29 +101,27 @@ namespace TP_ASPNET.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Title,Description")] Todo todo)
-        {
-            if (id != todo.Id)
-            {
+        public async Task<IActionResult> Edit(Guid id, [Bind("Title,Description")] Todo todo){
+            // If the todo doesn't exists
+            if (id != todo.Id){
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
-            {
+            // If the Todo doesn't belong to our user
+            if (todo.User != GetCurrentUser().Result) {
+                return Unauthorized();
+            }
+            
+            if (ModelState.IsValid){
                 todo.LastModificationDate = DateTime.Now;
-                try
-                {
+                try{
                     _context.Update(todo);
                     await _context.SaveChangesAsync();
                 }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!TodoExists(todo.Id))
-                    {
+                catch (DbUpdateConcurrencyException){
+                    if (!TodoExists(todo.Id)){
                         return NotFound();
-                    }
-                    else
-                    {
+                    }else{
                         throw;
                     }
                 }
@@ -134,18 +131,21 @@ namespace TP_ASPNET.Controllers
         }
 
         // GET: Todoes/Delete/5
-        public async Task<IActionResult> Delete(Guid? id)
-        {
-            if (id == null)
-            {
+        public async Task<IActionResult> Delete(Guid? id){
+            // If we have an invalid id
+            if (id == null){
                 return NotFound();
             }
 
             var todo = await _context.Todo
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (todo == null)
-            {
+                .FirstOrDefaultAsync(m => m.Id == id && m.User == GetCurrentUser().Result);
+            // If we haven't found any todoes
+            if (todo == null){
                 return NotFound();
+            }
+            // If the Todo doesn't belong to our user, we exit with an error code
+            if (todo.User != GetCurrentUser().Result) {
+                return Unauthorized();
             }
 
             return View(todo);
@@ -154,16 +154,23 @@ namespace TP_ASPNET.Controllers
         // POST: Todoes/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(Guid id)
-        {
+        public async Task<IActionResult> DeleteConfirmed(Guid id){
             var todo = await _context.Todo.FindAsync(id);
+            // If the todo doesn't exist
+            if (todo == null) {
+                return NotFound();
+            }
+            // If the Todo doesn't belong to our user, we exit with an error code
+            if (todo.User != GetCurrentUser().Result){
+                return Unauthorized();
+            }
+            // Remove the user
             _context.Todo.Remove(todo);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool TodoExists(Guid id)
-        {
+        private bool TodoExists(Guid id){
             return _context.Todo.Any(e => e.Id == id);
         }
     }
