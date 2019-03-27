@@ -31,6 +31,16 @@ namespace TP_ASPNET.Controllers{
         private Task<User> GetCurrentUserAsync() => _userManager.GetUserAsync(HttpContext.User);
 
 
+        // GET: Users
+        public async Task<IActionResult> Index() {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null) {
+                return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+            }
+
+            return View(user);
+        }
+
         // GET: Users/Edit
         public async Task<IActionResult> Edit() {
             var user = await _userManager.GetUserAsync(User);
@@ -55,26 +65,27 @@ namespace TP_ASPNET.Controllers{
 
         // POST: Users/ChangePassword
         [HttpPost]
-        public async Task<IActionResult> ChangePassword(String oldPassword, String password) {
-            if (!ModelState.IsValid){
-                return View(User);
-            }
-
+        public async Task<IActionResult> ChangePassword(String OldPassword, String NewPassword) {
             var user = await _userManager.GetUserAsync(User);
             if (user == null) {
                 return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
             }
+            if (!ModelState.IsValid){
+                return View(user);
+            }
 
-            var changePasswordResult = await _userManager.ChangePasswordAsync(user, oldPassword, password);
+            
+
+            var changePasswordResult = await _userManager.ChangePasswordAsync(user, OldPassword, NewPassword);
             if (!changePasswordResult.Succeeded) {
                 foreach (var error in changePasswordResult.Errors) {
                     ModelState.AddModelError(string.Empty, error.Description);
                 }
-                return View(User);
+                return View(user);
             }
 
             await _signInManager.RefreshSignInAsync(user);
-            return View(User);
+            return View(user);
         }
 
 
