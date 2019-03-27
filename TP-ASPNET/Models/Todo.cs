@@ -12,6 +12,7 @@ namespace TP_ASPNET.Models {
         [DataType(DataType.Date)]
         public DateTime LastModificationDate { get; set; }
         public string Description { get; set; }
-        public Guid UserId { get; set; }
+        public Boolean Done { get; set; }
+        public User User { get; set; }
     }
 }

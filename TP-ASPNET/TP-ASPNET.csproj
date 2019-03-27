@@ -15,6 +15,10 @@
     <Compile Remove="Migrations\20190326142322_Initial.Designer.cs" />
     <Compile Remove="Migrations\20190326143857_Initial.cs" />
     <Compile Remove="Migrations\20190326143857_Initial.Designer.cs" />
+    <Compile Remove="Migrations\20190326145609_Initial.cs" />
+    <Compile Remove="Migrations\20190326145609_Initial.Designer.cs" />
+    <Compile Remove="Migrations\20190326160024_Initial.cs" />
+    <Compile Remove="Migrations\20190326160024_Initial.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -28,6 +32,10 @@
     <Content Update="Views\Home\Login.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Areas\Identity\Services\" />
   </ItemGroup>
 
 </Project>

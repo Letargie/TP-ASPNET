@@ -142,13 +142,17 @@ namespace TPASPNET.Migrations
 
                     b.Property<string>("Description");
 
+                    b.Property<bool>("Done");
+
                     b.Property<DateTime>("LastModificationDate");
 
                     b.Property<string>("Title");
 
-                    b.Property<Guid>("UserId");
+                    b.Property<string>("UserId");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Todo");
                 });
@@ -255,6 +259,13 @@ namespace TPASPNET.Migrations
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("TP_ASPNET.Models.Todo", b =>
+                {
+                    b.HasOne("TP_ASPNET.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
                 });
 #pragma warning restore 612, 618
         }

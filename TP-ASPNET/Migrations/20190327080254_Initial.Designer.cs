@@ -10,7 +10,7 @@ using TP_ASPNET.Models;
 namespace TPASPNET.Migrations
 {
     [DbContext(typeof(TodoContext))]
-    [Migration("20190326145609_Initial")]
+    [Migration("20190327080254_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -144,13 +144,17 @@ namespace TPASPNET.Migrations
 
                     b.Property<string>("Description");
 
+                    b.Property<bool>("Done");
+
                     b.Property<DateTime>("LastModificationDate");
 
                     b.Property<string>("Title");
 
-                    b.Property<Guid>("UserId");
+                    b.Property<string>("UserId");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Todo");
                 });
@@ -257,6 +261,13 @@ namespace TPASPNET.Migrations
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("TP_ASPNET.Models.Todo", b =>
+                {
+                    b.HasOne("TP_ASPNET.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
                 });
 #pragma warning restore 612, 618
         }
