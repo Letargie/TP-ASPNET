@@ -29,7 +29,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Update="Views\Connection\ForgotPassword.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
     <Content Update="Views\Home\Login.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Views\Todoes\_TodoesNavPartial.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
     <Content Update="Views\Users\Index.cshtml">
@@ -38,10 +44,6 @@
     <Content Update="Views\Users\_UsersNavPartial.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Areas\Identity\Services\" />
   </ItemGroup>
 
 </Project>

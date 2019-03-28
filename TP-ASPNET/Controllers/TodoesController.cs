@@ -32,6 +32,11 @@ namespace TP_ASPNET.Controllers{
             return View(await _context.Todo.Where(t => t.User == GetCurrentUser().Result).AsQueryable().ToListAsync());
         }
 
+        // GET: Todoes/List
+        public async Task<IActionResult> List() {
+            return View(await _context.Todo.Where(t => t.User == GetCurrentUser().Result).AsQueryable().ToListAsync());
+        }
+
         // GET: Todoes/Details/5
         public async Task<IActionResult> Details(Guid? id){
             if (id == null){

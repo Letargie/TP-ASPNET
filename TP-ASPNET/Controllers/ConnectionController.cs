@@ -12,7 +12,7 @@ using TP_ASPNET.Models;
 using Microsoft.AspNetCore.Identity;
 using ASPNetCoreIdentity.Models;
 using Microsoft.AspNetCore.Authorization;
-using ASPNetCoreIdentity.Models.AccountViewModels;
+using ASPNetCoreIdentity.Models.ConnectionViewModels;
 using Microsoft.Extensions.Logging;
 
 namespace TP_ASPNET.Controllers
