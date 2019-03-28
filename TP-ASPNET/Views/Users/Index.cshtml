@@ -4,6 +4,17 @@
 }
 
 <h2>@ViewData["Title"]</h2>
-<div class="col-md-2">
-    <partial name="_UsersNavPartial" />
+<div class="row">
+    <div class="col-md-2">
+        <partial name="_UsersNavPartial" />
+    </div>
+    <div class="col-md-6">
+        <ul>
+            <li>@Html.DisplayNameFor(model => model.FirstName) : @Html.DisplayFor(model => model.FirstName)</li>
+            <li>@Html.DisplayNameFor(model => model.LastName) : @Html.DisplayFor(model => model.LastName)</li>
+            <li>@Html.DisplayNameFor(model => model.Email) : @Html.DisplayFor(model => model.Email)</li>
+            <li>@Html.DisplayNameFor(model => model.InscriptionDate) : @Html.DisplayFor(model => model.InscriptionDate)</li>
+            <li>@Html.DisplayNameFor(model => model.LastConnectionDate) : @Html.DisplayFor(model => model.LastConnectionDate)</li>
+        </ul>
+    </div>
 </div>

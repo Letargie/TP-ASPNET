@@ -51,6 +51,32 @@ namespace TP_ASPNET.Controllers{
             return View(user);
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit([Bind("FirstName,LastName")] User user) {
+            if (ModelState.IsValid) {
+                // If the Todo doesn't belong to our user
+                User curUser = GetCurrentUser().Result;
+                if (curUser == null) {
+                    return Unauthorized();
+                }
+                curUser.FirstName = user.FirstName;
+                curUser.LastName = user.LastName;
+                try {
+                    _context.Update(curUser);
+                    await _context.SaveChangesAsync();
+                } catch (DbUpdateConcurrencyException) {
+                    if (!UserExists(user.Id)) {
+                        return NotFound();
+                    } else {
+                        throw;
+                    }
+                }
+                return RedirectToAction(nameof(Index));
+            }
+            return View(user);
+        }
+
 
 
         // GET: Users/ChangePassword
@@ -88,6 +114,8 @@ namespace TP_ASPNET.Controllers{
             return View(user);
         }
 
-
+        private bool UserExists(string id) {
+            return _context.User.Any(e => e.Id == id);
+        }
     }
 }

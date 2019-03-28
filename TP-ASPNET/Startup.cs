@@ -35,8 +35,9 @@ namespace TP_ASPNET {
             services.AddDbContext<TodoContext>(options =>
             options.UseSqlServer(Configuration.GetConnectionString("TodoContext")));
 
-            services.AddDefaultIdentity<User>()
-                .AddEntityFrameworkStores<TodoContext>();
+            services.AddIdentity<User, IdentityRole>()
+                .AddEntityFrameworkStores<TodoContext>()
+                .AddDefaultTokenProviders();
 
             services.Configure<IdentityOptions>(options =>
             {
