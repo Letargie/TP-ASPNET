@@ -13,7 +13,7 @@ namespace TP_ASPNET.Models {
 
         [DataType(DataType.Date)]
         public DateTime InscriptionDate { get; set; }
-        [DataType(DataType.Date)]
+        [DataType(DataType.DateTime)]
         public DateTime LastConnectionDate { get; set; }
     }
 }

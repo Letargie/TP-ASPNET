@@ -7,9 +7,9 @@ namespace TP_ASPNET.Models {
         public Guid Id { get; set; }
         public string Title { get; set; }
 
-        [DataType(DataType.Date)]
+        [DataType(DataType.DateTime)]
         public DateTime CreationDate { get; set; }
-        [DataType(DataType.Date)]
+        [DataType(DataType.DateTime)]
         public DateTime LastModificationDate { get; set; }
         public string Description { get; set; }
         public Boolean Done { get; set; }

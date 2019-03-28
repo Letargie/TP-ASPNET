@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -87,10 +88,11 @@ namespace TP_ASPNET.Controllers
                 var result = await SignIn.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
                 if (result.Succeeded) {
                     Logger.LogInformation("User logged in.");
-                    /*User usr = UserManager.GetUserAsync(HttpContext.User).Result;
+                    User usr = Context.User.First(
+                        u => u.NormalizedEmail == model.Email);
                     usr.LastConnectionDate = DateTime.Now;
                     Context.Update(usr);
-                    await Context.SaveChangesAsync();*/
+                    await Context.SaveChangesAsync();
 
                     return RedirectToLocal(returnUrl);
                 }
