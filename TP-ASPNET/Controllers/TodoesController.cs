@@ -157,6 +157,35 @@ namespace TP_ASPNET.Controllers{
             return RedirectToAction(nameof(Index));
         }
 
+        // GET: Todoes/Done
+        [HttpGet]
+        public IActionResult Done(Guid id, string returnUrl = null) {
+            return SetDone(id, true, returnUrl);
+        }
+
+        // GET: Todoes/Undo
+        [HttpGet]
+        public IActionResult Undo(Guid id, string returnUrl = null) {
+            return SetDone(id, false, returnUrl);
+        }
+
+
+        public IActionResult SetDone(Guid id, Boolean isDone, string returnUrl = null) {
+            var todo = _context.Todo.First(t => t.Id == id && t.User == GetCurrentUser().Result);
+            // If the Todo doesn't belong to our user, we exit with an error code
+            if (todo == null) {
+                return Unauthorized();
+            }
+
+            todo.Done = isDone;
+            _context.Todo.Update(todo);
+            _context.SaveChanges();
+            if (returnUrl != null){
+                return RedirectToAction(returnUrl, "Todoes");
+            }
+            return RedirectToAction(nameof(Index));
+        }
+
         private bool TodoExists(Guid id){
             return _context.Todo.Any(e => e.Id == id);
         }

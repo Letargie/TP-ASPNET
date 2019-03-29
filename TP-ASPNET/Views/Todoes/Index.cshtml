@@ -9,9 +9,19 @@
 <div class="row">
     @foreach (var item in Model)
     {
-        <div class="col-md-4 todo-item">
+        string classes = "col-md-4 todo-item";
+        if (item.Done){
+            classes += " done";
+        }
+        <div class="@classes">
             <h4><a asp-action="Details" asp-route-id="@item.Id">@Html.DisplayFor(modelItem => item.Title)</a></h4>
             <div>@Html.DisplayFor(modelItem => item.Description)</div>
+            <a class="todo-item-delete actions" asp-action="Delete" asp-route-id="@item.Id">X</a>
+            @if (!item.Done) {
+                <a class="actions btn btn-default" asp-action="Done" asp-route-id="@item.Id">Done</a>
+            } else {
+                <a class="actions btn btn-default"  asp-action="Undo" asp-route-id="@item.Id">Undo</a>
+            }
         </div>
     }
 </div>

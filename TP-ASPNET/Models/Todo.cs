@@ -11,6 +11,7 @@ namespace TP_ASPNET.Models {
         public DateTime CreationDate { get; set; }
         [DataType(DataType.DateTime)]
         public DateTime LastModificationDate { get; set; }
+        [DataType(DataType.MultilineText)]
         public string Description { get; set; }
         public Boolean Done { get; set; }
         public User User { get; set; }
