@@ -40,6 +40,14 @@
         <dd>
             @Html.DisplayFor(model => model.Done)
         </dd>
+        <dt>
+            @Html.DisplayNameFor(model => Model.TodoLabels.First().Label)
+        </dt>
+        <dd>
+            @foreach (var todoList in Model.TodoLabels) {
+                <span class="todo-label">@todoList.Label.Text</span>
+            }
+        </dd>
     </dl>
 </div>
 <div>

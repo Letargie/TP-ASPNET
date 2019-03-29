@@ -17,11 +17,20 @@
             <h4><a asp-action="Details" asp-route-id="@item.Id">@Html.DisplayFor(modelItem => item.Title)</a></h4>
             <div>@Html.DisplayFor(modelItem => item.Description)</div>
             <a class="todo-item-delete actions" asp-action="Delete" asp-route-id="@item.Id">X</a>
-            @if (!item.Done) {
-                <a class="actions btn btn-default" asp-action="Done" asp-route-id="@item.Id">Done</a>
-            } else {
-                <a class="actions btn btn-default"  asp-action="Undo" asp-route-id="@item.Id">Undo</a>
-            }
+            <hr>
+            <div class="actions">
+                @foreach (var todoList in item.TodoLabels){
+                    <span class="todo-label">@todoList.Label.Text</span>
+                }
+            </div>
+            <br/>
+            <div>
+                @if (!item.Done) {
+                    <a class="actions btn btn-default" asp-action="Done" asp-route-id="@item.Id">Done</a>
+                } else {
+                    <a class="actions btn btn-default"  asp-action="Undo" asp-route-id="@item.Id">Undo</a>
+                }
+            </div>
         </div>
     }
 </div>

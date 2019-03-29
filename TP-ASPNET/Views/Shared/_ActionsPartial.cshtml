@@ -1,0 +1,8 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using ASPNetCoreIdentity.Models
+@inject SignInManager<User> SignInManager
+@inject UserManager<User> UserManager
+@if (SignInManager.IsSignedIn(User)) {
+    <li><a asp-area="" asp-controller="Todoes" asp-action="Index">Todoes</a></li>
+    <li><a asp-area="" asp-controller="Labels" asp-action="Index">Labels</a></li>
+}

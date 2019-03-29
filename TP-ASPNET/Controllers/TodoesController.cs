@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ASPNetCoreIdentity.Models.ConnectionViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -29,12 +30,14 @@ namespace TP_ASPNET.Controllers{
 
         // GET: Todoes
         public async Task<IActionResult> Index(){
-            return View(await _context.Todo.Where(t => t.User == GetCurrentUser().Result).AsQueryable().ToListAsync());
+            return View(await _context.Todo.Include(t => t.TodoLabels).ThenInclude(tdl => tdl.Label)
+                .Where(t => t.User == GetCurrentUser().Result).AsQueryable().ToListAsync());
         }
 
         // GET: Todoes/List
         public async Task<IActionResult> List() {
-            return View(await _context.Todo.Where(t => t.User == GetCurrentUser().Result).AsQueryable().ToListAsync());
+            return View(await _context.Todo.Include(t => t.TodoLabels).ThenInclude(tdl => tdl.Label)
+                .Where(t => t.User == GetCurrentUser().Result).AsQueryable().ToListAsync());
         }
 
         // GET: Todoes/Details/5
@@ -43,7 +46,7 @@ namespace TP_ASPNET.Controllers{
                 return NotFound();
             }
 
-            var todo = await _context.Todo
+            var todo = await _context.Todo.Include(t => t.TodoLabels).ThenInclude(tdl => tdl.Label)
                 .FirstOrDefaultAsync(t => t.Id == id && t.User == GetCurrentUser().Result);
             // We check if the todo belong to the current user
             if (todo == null){
@@ -56,7 +59,9 @@ namespace TP_ASPNET.Controllers{
 
         // GET: Todoes/Create
         public IActionResult Create(){
-            return View();
+            TodoViewModel tvm = new TodoViewModel();
+            tvm.Labels = _context.Label.ToList();
+            return View(tvm);
         }
 
         // POST: Todoes/Create
@@ -64,13 +69,20 @@ namespace TP_ASPNET.Controllers{
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Title,Description")] Todo todo){
+        public async Task<IActionResult> Create([Bind("Title,Description")] Todo todo, List<Guid> TodoLabels) {
             if (ModelState.IsValid){
                 todo.Id = Guid.NewGuid();
                 todo.User = GetCurrentUser().Result;
                 todo.CreationDate = DateTime.Now;
                 todo.LastModificationDate = DateTime.Now;
                 todo.Done = false;
+                todo.TodoLabels = new List<TodoLabel>();
+                foreach (Guid labelId in TodoLabels) {
+                    TodoLabel tdl = new TodoLabel();
+                    tdl.Todo = todo;
+                    tdl.LabelGuid = labelId;
+                    todo.TodoLabels.Add(tdl);
+                }
                 _context.Add(todo);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -86,20 +98,22 @@ namespace TP_ASPNET.Controllers{
                 return NotFound();
             }
 
-            var todo = _context.Todo.First(t => t.Id == id && t.User == GetCurrentUser().Result);
+            var todo = _context.Todo.Include(t => t.TodoLabels).ThenInclude(tl => tl.Label).First(t => t.Id == id && t.User == GetCurrentUser().Result);
             // If the todo doesn't belong to the current user
             if (todo == null){
                  return Unauthorized();
             }
-            return View(todo);
+           
+            TodoViewModel tvm = new TodoViewModel();
+            tvm.Todo = todo;
+            tvm.Labels = _context.Label.ToList();
+            return View(tvm);
         }
 
         // POST: Todoes/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Title,Description")] Todo todo){
+        public async Task<IActionResult> Edit(Guid id, [Bind("Title,Description")] Todo todo, List<Guid> TodoLabels){
             if (ModelState.IsValid) {
                 // If the Todo doesn't belong to our user
                 Todo curTodo = _context.Todo.First(t => t.Id == id && t.User == GetCurrentUser().Result);
@@ -109,6 +123,13 @@ namespace TP_ASPNET.Controllers{
                 curTodo.Description = todo.Description;
                 curTodo.Title = todo.Title;
                 curTodo.LastModificationDate = DateTime.Now;
+                curTodo.TodoLabels = new List<TodoLabel>();
+                foreach (Guid labelId in TodoLabels){
+                    TodoLabel tdl = new TodoLabel();
+                    tdl.Todo = curTodo;
+                    tdl.LabelGuid = labelId;
+                    curTodo.TodoLabels.Add(tdl);
+                }
                 try{
                     _context.Update(curTodo);
                     await _context.SaveChangesAsync();
@@ -122,7 +143,10 @@ namespace TP_ASPNET.Controllers{
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(todo);
+            TodoViewModel tvm = new TodoViewModel();
+            tvm.Todo = todo;
+            tvm.Labels = _context.Label.ToList();
+            return View(tvm);
         }
 
         // GET: Todoes/Delete/5
@@ -146,12 +170,15 @@ namespace TP_ASPNET.Controllers{
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id){
-            var todo = _context.Todo.First(t => t.Id == id && t.User == GetCurrentUser().Result);
+            var todo = _context.Todo.Include(t => t.TodoLabels).First(t => t.Id == id && t.User == GetCurrentUser().Result);
             // If the Todo doesn't belong to our user, we exit with an error code
             if (todo == null) {
                 return Unauthorized();
             }
-            // Remove the user
+            // Remove the todolabels that were linked to our todo
+            foreach (var todoLabel in todo.TodoLabels){
+                _context.TodoLabels.Remove(todoLabel);
+            }
             _context.Todo.Remove(todo);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));

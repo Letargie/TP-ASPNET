@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TP_ASPNET.Models;
 
 namespace TPASPNET.Migrations
 {
     [DbContext(typeof(TodoContext))]
-    partial class TodoContextModelSnapshot : ModelSnapshot
+    [Migration("20190329094555_testFK2")]
+    partial class testFK2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -183,24 +185,6 @@ namespace TPASPNET.Migrations
                     b.ToTable("Todo");
                 });
 
-            modelBuilder.Entity("TP_ASPNET.Models.TodoLabel", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<Guid>("LabelGuid");
-
-                    b.Property<Guid>("TodoGuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("LabelGuid");
-
-                    b.HasIndex("TodoGuid");
-
-                    b.ToTable("TodoLabels");
-                });
-
             modelBuilder.Entity("TP_ASPNET.Models.User", b =>
                 {
                     b.Property<string>("Id")
@@ -318,19 +302,6 @@ namespace TPASPNET.Migrations
                     b.HasOne("TP_ASPNET.Models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId");
-                });
-
-            modelBuilder.Entity("TP_ASPNET.Models.TodoLabel", b =>
-                {
-                    b.HasOne("TP_ASPNET.Models.Label", "Label")
-                        .WithMany()
-                        .HasForeignKey("LabelGuid")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("TP_ASPNET.Models.Todo", "Todo")
-                        .WithMany("TodoLabels")
-                        .HasForeignKey("TodoGuid")
-                        .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618
         }

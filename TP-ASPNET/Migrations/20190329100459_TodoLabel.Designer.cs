@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TP_ASPNET.Models;
 
 namespace TPASPNET.Migrations
 {
     [DbContext(typeof(TodoContext))]
-    partial class TodoContextModelSnapshot : ModelSnapshot
+    [Migration("20190329100459_TodoLabel")]
+    partial class TodoLabel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -198,7 +200,7 @@ namespace TPASPNET.Migrations
 
                     b.HasIndex("TodoGuid");
 
-                    b.ToTable("TodoLabels");
+                    b.ToTable("TodoLabel");
                 });
 
             modelBuilder.Entity("TP_ASPNET.Models.User", b =>

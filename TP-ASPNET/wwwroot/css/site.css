@@ -39,7 +39,7 @@ body {
 .todo-item {
     border: 2px black solid;
     margin: 5px;
-    padding: 2px;
+    padding: 5px;
     border-radius: 10px;
 }
 
@@ -69,4 +69,11 @@ body {
     color: white;
     text-decoration: none;
     border-top-right-radius: 9px;
+}
+
+.todo-label {
+    border-radius: 4px;
+    background-color: lightgray;
+    margin: 4px;
+    padding: 4px;
 }
